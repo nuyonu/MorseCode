@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MorseCode</string>
+    <string name="action_settings">Settings</string>
+    <string name="decode_sms">Decode a Message</string>
+</resources>

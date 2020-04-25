@@ -2,7 +2,6 @@ package com.example.morsecode.MorseCode;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MorseCode
 {
@@ -47,6 +46,9 @@ public class MorseCode
         morseCode.put("9", "----.");
         morseCode.put("0", "-----");
         morseCode.put(" ", ".......");
+        morseCode.put(".", ".-.-.-");
+        morseCode.put("?", "..--..");
+        morseCode.put(",", "--..--");
         morseCodeReversed = invert(morseCode);
     }
 
@@ -76,7 +78,8 @@ public class MorseCode
                     result.append(".......").append(" ");
             }
         }
-        result.delete(result.length() - 1, result.length());
+        if(result.length() > 0)
+            result.delete(result.length() - 1, result.length());
         return result.toString();
     }
 
@@ -87,7 +90,8 @@ public class MorseCode
         for (String s : list) {
             try {
                 String currentCharacter = morseCodeReversed.get(s);
-                result.append(currentCharacter);
+                if(currentCharacter != null)
+                    result.append(currentCharacter);
             } catch (Exception e) {
                 e.printStackTrace();
             }

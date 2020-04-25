@@ -1,7 +1,11 @@
 package com.example.morsecode;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +17,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.view.View;
 import android.view.Menu;
@@ -38,10 +44,25 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-                sendIntent.setData(Uri.parse("sms:"));
-                sendIntent.putExtra("sms_body", MorseCode.transformFromTextToMorseCode(input.getText().toString().toLowerCase()));
-                startActivity(sendIntent);
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Send message")
+                        .setMessage("Send " + input.getText() + " as a message? \n" +
+                                "Any code that is not in morse code will be removed.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                                sendIntent.setData(Uri.parse("sms:"));
+                                sendIntent.putExtra("sms_body", MorseCode.transformFromTextToMorseCode(input.getText().toString().toLowerCase()));
+                                startActivity(sendIntent);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+//                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+//                sendIntent.setData(Uri.parse("sms:"));
+//                sendIntent.putExtra("sms_body", MorseCode.transformFromTextToMorseCode(input.getText().toString().toLowerCase()));
+//                startActivity(sendIntent);
             }
         });
 
@@ -52,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 if(value.length() == 0)
                     Snackbar.make(v, "Trebuie sa introduceti cel putin un caracter", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 else
-                    new MorseTask(cameraManager, textViewCurrentCharacter, currentMorseCode).execute(value);
+                    new MorseTask(cameraManager, textViewCurrentCharacter, currentMorseCode, MainActivity.this).execute(value);
             }
         });
     }
@@ -68,9 +89,19 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            if(ContextCompat.checkSelfPermission(getBaseContext(),  Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+                openSmsViewActivity();
+            else {
+                final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS}, REQUEST_CODE_ASK_PERMISSIONS);
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openSmsViewActivity() {
+        Intent intent = new Intent(this, SmsViewActivity.class);
+        startActivity(intent);
     }
 }

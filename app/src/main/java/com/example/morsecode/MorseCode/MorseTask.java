@@ -1,20 +1,27 @@
 package com.example.morsecode.MorseCode;
 
+import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.os.AsyncTask;
+import android.view.Gravity;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.morsecode.MainActivity;
 
 public class MorseTask extends AsyncTask<String, String, String> {
     private CameraManager cameraManager;
+    private Activity activity;
     private TextView textViewCurrentCharacter;
     private TextView currentMorseCode;
 
-    public MorseTask(CameraManager cameraManager, TextView textViewCurrentCharacter, TextView currentMorseCode)
+    public MorseTask(CameraManager cameraManager, TextView textViewCurrentCharacter, TextView currentMorseCode, Activity activity)
     {
         this.textViewCurrentCharacter = textViewCurrentCharacter;
         this.cameraManager = cameraManager;
         this.currentMorseCode = currentMorseCode;
+        this.activity = activity;
     }
 
     protected String doInBackground(String... params) {
@@ -31,8 +38,18 @@ public class MorseTask extends AsyncTask<String, String, String> {
 
     protected void onProgressUpdate(String... progress) {
         String currentCharacter = progress[0];
-        textViewCurrentCharacter.setText("{" + currentCharacter + "}");
-        currentMorseCode.setText("[" + MorseCode.morseCode.get(currentCharacter) + "]");
+        String morse =  MorseCode.morseCode.get(currentCharacter);
+        if(morse != null)
+        {
+            textViewCurrentCharacter.setText("{" + currentCharacter + "}");
+            currentMorseCode.setText("[" + morse + "]");
+        }
+        else
+        {
+            Toast toast = Toast.makeText(activity,"No morse code found for [" + currentCharacter + "]", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
     }
 
     protected void onPostExecute(String result) {
@@ -69,7 +86,7 @@ public class MorseTask extends AsyncTask<String, String, String> {
     }
 
     private void flashByCharacter(String character) {
-        final int milliseconds = 1000;
+        final int milliseconds = 200;
         String morse = MorseCode.morseCode.get(character);
         try{
             for(int i = 0; i < morse.length(); i++)

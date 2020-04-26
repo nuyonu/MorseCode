@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -59,10 +60,6 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton(android.R.string.no, null)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-//                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-//                sendIntent.setData(Uri.parse("sms:"));
-//                sendIntent.putExtra("sms_body", MorseCode.transformFromTextToMorseCode(input.getText().toString().toLowerCase()));
-//                startActivity(sendIntent);
             }
         });
 
@@ -71,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String value = input.getText().toString().toLowerCase();
                 if(value.length() == 0)
-                    Snackbar.make(v, "Trebuie sa introduceti cel putin un caracter", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    Snackbar.make(v, "You must enter at least one character", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 else
                     new MorseTask(cameraManager, textViewCurrentCharacter, currentMorseCode, MainActivity.this).execute(value);
             }
@@ -98,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 123: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openSmsViewActivity();
+                } else {
+                    Toast.makeText(MainActivity.this, "You cannot read messages without permission.", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
     public void openSmsViewActivity() {

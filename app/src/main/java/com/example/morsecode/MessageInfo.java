@@ -3,7 +3,7 @@ package com.example.morsecode;
 public class MessageInfo {
     public MessageInfo(String phoneNumber, String message) {
         this.phoneNumber = phoneNumber;
-        Message = message;
+        this.Message = message;
     }
 
     public String getPhoneNumber() {

@@ -49,11 +49,10 @@ public class MorseCode
         morseCode.put(".", ".-.-.-");
         morseCode.put("?", "..--..");
         morseCode.put(",", "--..--");
-        morseCodeReversed = invert(morseCode);
+        morseCodeReversed = invertMap(morseCode);
     }
 
-    private static <V, K> Map<V, K> invert(Map<K, V> map) {
-
+    private static <V, K> Map<V, K> invertMap(Map<K, V> map) {
         Map<V, K> inv = new HashMap<>();
 
         for (Map.Entry<K, V> entry : map.entrySet())
@@ -63,6 +62,7 @@ public class MorseCode
     }
 
     public static String transformFromTextToMorseCode(String text) {
+        text = text.toLowerCase();
         StringBuilder result = new StringBuilder();
 
         for(int index = 0; index < text.length(); index++)
@@ -83,7 +83,7 @@ public class MorseCode
         return result.toString();
     }
 
-    public static String tranformFromMorseCodeToText(String morse) {
+    public static String transformFromMorseCodeToText(String morse) {
         StringBuilder result = new StringBuilder();
 
         String[] list = morse.split(" ");

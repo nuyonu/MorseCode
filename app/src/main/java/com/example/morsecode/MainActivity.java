@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,9 +64,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final boolean hasFlash = this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         Button button = findViewById(R.id.buttonShowMorseCode);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                if(!hasFlash) {
+                    Snackbar.make(v, "Your device doesn't have led flash on main camera", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    return;
+                }
                 String value = input.getText().toString().toLowerCase();
                 if(value.length() == 0)
                     Snackbar.make(v, "You must enter at least one character", Snackbar.LENGTH_LONG).setAction("Action", null).show();
